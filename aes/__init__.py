@@ -12,9 +12,10 @@ class AES:
         :param block:
         :return:
         '''
-
-        block = plaintext_block
-
-        self._initial_permutation(block)
+        state = plaintext_block
+        self._initial_permutation(state)
 
 
+    def _initial_permutation(self, block: bytearray):
+        # TODO
+        return

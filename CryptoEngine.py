@@ -29,7 +29,7 @@ class CryptoEngine:
         :param plaintext:
         :return:
         """
-        plaintext = bytearray(plaintext)
+        plaintext = bytearray(plaintext, 'utf8')
         return plaintext + b"\x00" * (16 - len(plaintext) % 16)
 
     @staticmethod
@@ -55,8 +55,6 @@ class CryptoEngine:
 
     def decrypt(self, ciphertext):
         # returns decrypted and depadded cleartext
-        # plaintext = self.decrypt(ciphertext)
-        # return plaintext
         return
 
     def _hash_secret(self, secret: str):
