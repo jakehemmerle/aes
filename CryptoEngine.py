@@ -4,7 +4,7 @@ from aes import AES
 
 
 class CryptoEngine:
-    def __init__(self, secret):
+    def __init__(self, secret: str):
         self.salt = b'superSecretSaltt!'
         self.argon2_config = {  # default values (pretty sure)
             'hash_len': 32,
@@ -14,7 +14,7 @@ class CryptoEngine:
             'type': argon2.low_level.Type.ID
         }
 
-        self.key = self._hash_secret(secret)   # truncate to 128-bits cause lazy
+        self.key = self._hash_secret(secret)
         self.cipher = AES(self.key)
 
     # destructor
