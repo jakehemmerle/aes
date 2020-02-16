@@ -8,8 +8,8 @@ class AES:
 
     def encrypt(self, plaintext_block: bytearray):
         '''
-        Returns block encrypted with instance key
-        :param block:
+        Returns block encrypted with key
+        :param plaintext_block:
         :return:
         '''
         state = plaintext_block

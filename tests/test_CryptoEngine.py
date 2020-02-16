@@ -20,9 +20,12 @@ class TestCryptoEngine(unittest.TestCase):
     def setUpClass(cls):
         return
 
-    def test_padding_1(self):
+    def test_padding(self):
         for string in plaintexts:
             self.assertEqual(len(cipher._pad(string)) % 16, 0)
+
+    def test_hash_is_len_128(self):
+        self.assertEqual(len(cipher._hash_secret('secrett')), 16)
 
 
 if __name__ == '__main__':

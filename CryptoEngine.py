@@ -14,7 +14,7 @@ class CryptoEngine:
             'type': argon2.low_level.Type.ID
         }
 
-        self.key = self._hash_secret(secret)[:16]   # truncate to 128-bits cause lazy
+        self.key = self._hash_secret(secret)   # truncate to 128-bits cause lazy
         self.cipher = AES(self.key)
 
     # destructor
@@ -59,7 +59,7 @@ class CryptoEngine:
 
     def _hash_secret(self, secret: str):
         """
-        Extends key to 128-bit key for AES
+        Extends key to 128-bit key for AES (truncates 256-bit result to 128-bit)
         :param secret: secret password
         :return: 16 byte key ready for use in AES
         """
@@ -67,7 +67,7 @@ class CryptoEngine:
                                                 time_cost=self.argon2_config['time_cost'],
                                                 memory_cost=self.argon2_config['memory_cost'],
                                                 parallelism=self.argon2_config['parallelism'],
-                                                type=self.argon2_config['type'])
+                                                type=self.argon2_config['type'])[:16]
 
     @staticmethod
     def _split_to_blocks(data: bytearray):
