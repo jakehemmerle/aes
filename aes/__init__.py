@@ -25,6 +25,13 @@ class AES:
         '''
         self.subkeys = subkeys
 
+    @staticmethod
+    def _sub_bytes(state: bytearray):
+        new_state = []
+        for byte in state:
+            new_state.append(((byte * 31) % 257) ^ 99)
+        return bytearray(new_state)
+
     def encrypt(self, plaintext_block: bytearray):
         '''
         Returns block encrypted with key
