@@ -12,7 +12,7 @@ plaintexts = [
     'dfdfdfdfdfdfiiiiiiiiii'
 ]
 password = 'Password!'
-cipher = CryptoEngine(password)
+engine = CryptoEngine(password)
 
 
 class TestCryptoEngine(unittest.TestCase):
@@ -22,10 +22,16 @@ class TestCryptoEngine(unittest.TestCase):
 
     def test_padding(self):
         for string in plaintexts:
-            self.assertEqual(len(cipher._pad(string)) % 16, 0)
+            self.assertEqual(len(engine._pad(string)) % 16, 0)
 
     def test_hash_is_len_128(self):
-        self.assertEqual(len(cipher._hash_secret('secrett')), 16)
+        self.assertEqual(len(engine._hash_secret('secrett')), 16)
+
+    def test_parses_subkeys_into_16_bytes(self):
+        engine._set_subkeys()
+        print(engine.cipher.subkeys)
+        for key in engine.cipher.subkeys:
+            self.assertEqual(len(key), 16)
 
 
 if __name__ == '__main__':

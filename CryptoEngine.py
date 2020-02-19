@@ -16,6 +16,7 @@ class CryptoEngine:
 
         self.key = self._hash_secret(secret)
         self.cipher = AES(self.key)
+        self._set_subkeys()
 
     # destructor
     def __del__(self):
@@ -77,3 +78,11 @@ class CryptoEngine:
         :return:
         """
         return [data[i:i + 16] for i in range(0, len(data), 16)]
+
+    def _set_subkeys(self):
+        with open('/Users/jakehemmerle/Documents/codebases/UC/Network-Security/aes_m12232386/data/subkeys.txt',
+                  'r') as file:
+            key_string = file.read()
+        subkeys = [bytes.fromhex(key) for key in key_string[:-1].split('\n')]  # -1 removes last '\n'
+
+        self.cipher.subkeys = subkeys

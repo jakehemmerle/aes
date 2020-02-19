@@ -36,5 +36,5 @@ class AES:
             self._add_key(state, key)
 
     @staticmethod
-    def _add_key(block: bytearray, key: bytes):
-        return AES._xor(block, key)
+    def _add_key(block: bytearray, subkey: bytes):
+        return AES._xor(block, subkey)
