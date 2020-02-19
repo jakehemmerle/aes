@@ -32,6 +32,9 @@ class TestAES(unittest.TestCase):
     def test_sub_bytes(self):
         self.assertEqual(AES._sub_bytes(bytearray(b'\x01')), bytearray(b'\x7c'))
 
+    def test_inv_sub_bytes(self):
+        self.assertEqual(AES._inv_sub_bytes(bytearray(b'\x7c')), bytearray(b'\x01'))
+
 
 if __name__ == '__main__':
     unittest.main()

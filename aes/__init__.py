@@ -8,7 +8,6 @@ class AES:
         self.key = key
         self.subkeys = []
 
-
     @staticmethod
     def _xor(a, b):
         '''
@@ -71,7 +70,7 @@ class AES:
             0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D,
         )
 
-
+        return bytearray([inv_sub_bytes[i] for i in state])
 
     def encrypt(self, plaintext_block: bytearray):
         '''
