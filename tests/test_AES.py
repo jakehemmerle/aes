@@ -30,12 +30,7 @@ class TestAES(unittest.TestCase):
         return
 
     def test_sub_bytes(self):
-        state = bytearray([i for i in range(16)])
-        print("State: {}".format(state))
-        print("length of state: {}".format(len(state)))
-
-        print("State after sub_bytes: {}".format(AES._sub_bytes(state)))
-        print("len state after sub_bytes: {}".format(len(AES._sub_bytes(state))))
+        self.assertEqual(AES._sub_bytes(bytearray(b'\x01')), bytearray(b'\x7c'))
 
 
 if __name__ == '__main__':
