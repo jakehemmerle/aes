@@ -1,5 +1,3 @@
-import numpy
-
 class AES:
     '''
     Key length
@@ -12,6 +10,11 @@ class AES:
 
     @staticmethod
     def _bytes_to_columns(state: bytearray):
+        """
+        returns state as list of columns
+        :param state:
+        :return:
+        """
         return [[state[0], state[1], state[2], state[3]],
                 [state[4], state[5], state[6], state[7]],
                 [state[8], state[9], state[10], state[11]],
@@ -27,6 +30,11 @@ class AES:
 
     @staticmethod
     def _bytes_to_rows(state: bytearray):
+        """
+        returns state as list of rows
+        :param state:
+        :return:
+        """
         return [[state[0], state[4], state[8], state[12]],
                 [state[1], state[5], state[9], state[13]],
                 [state[2], state[6], state[10], state[14]],
@@ -110,8 +118,17 @@ class AES:
         :return:
         '''
         state = plaintext_block
-        for key in self.subkeys:
-            self._add_key(state, key)
+        self._add_key(state, self.subkeys[0])
+        for key in self.subkeys[1:]:
+            state = self._sub_bytes(state)
+            state = self._shift_rows(state)
+            state = self._mix_columns(state)
+            state = self._add_key(state, key)
+        print("State after round {}: {}".format(len(self.subkeys) - 1, state.hex()))
+        return state
+
+
+
 
     @staticmethod
     def _add_key(block: bytearray, subkey: bytes):
@@ -165,16 +182,5 @@ class AES:
         return self._columns_to_bytes(columned_final)
 
     def _inv_mix_columns(self, state: bytearray):
-        state_matrix = self._bytes_to_columns(state)
-
-        mix_column_matrix = [[0x0E, 0x0B, 0x0D, 0x09],
-                             [0x09, 0x0E, 0x0B, 0x0D],
-                             [0x0D, 0x09, 0x0E, 0x0B],
-                             [0x0B, 0x0D, 0x09, 0x0E]]
-
-        columned_final = []
-        for column in state_matrix:
-            columned_final.append(numpy.matmul(mix_column_matrix, column))
-
-        return self._columns_to_bytes(columned_final)
+        return
 

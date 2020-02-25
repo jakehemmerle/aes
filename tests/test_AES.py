@@ -34,7 +34,8 @@ class TestAES(unittest.TestCase):
                                                 [0x75, 0xa4, 0x8d, 0x40],
                                                 [0xf4, 0x8d, 0x06, 0x7d],
                                                 [0x7a, 0x32, 0x0e, 0x5d]])
-        self.assertEqual(cipher._mix_columns(state), expected_state)
+
+        self.assertEqual(expected_state, cipher._mix_columns(state))
 
     def test_sub_bytes(self):
         self.assertEqual(AES._sub_bytes(bytearray(b'\x01')), bytearray(b'\x7c'))
