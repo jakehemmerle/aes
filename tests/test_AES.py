@@ -39,8 +39,19 @@ class TestAES(unittest.TestCase):
         self.assertEqual(AES._inv_sub_bytes(bytearray(b'\x7c')), bytearray(b'\x01'))
 
     def test_shift_rows(self):
-        state = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+        state = bytearray([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
         self.assertEqual(AES._inv_shift_rows(AES._shift_rows(state)), state)
+
+    def test_column_conversion(self):
+        state = bytearray(b'\x01\x02\x03\x04' * 4)
+        self.assertEqual(cipher._columns_to_bytes(cipher._bytes_to_columns(state)), state)
+
+    def test_row_conversion(self):
+        state = bytearray(b'\x01\x02\x03\x04' * 4)
+        self.assertEqual(cipher._)
+
+
+
 
 
 if __name__ == '__main__':

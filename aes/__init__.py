@@ -27,10 +27,10 @@ class AES:
 
     @staticmethod
     def _bytes_to_rows(state: bytearray):
-        return [state[0], state[4], state[8], state[12],
-                state[1], state[5], state[9], state[13],
-                state[2], state[6], state[10], state[14],
-                state[3], state[7], state[11], state[15]]
+        return [[state[0], state[4], state[8], state[12]],
+                [state[1], state[5], state[9], state[13]],
+                [state[2], state[6], state[10], state[14]],
+                [state[3], state[7], state[11], state[15]]]
 
     @staticmethod
     def _rows_to_bytes(state):
@@ -119,7 +119,9 @@ class AES:
 
     @staticmethod
     def _inv_shift_rows(state: bytearray):
-        return [state[0], state[13], state[10], state[7], state[4], state[1], state[14], state[11], state[8], state[5], state[2], state[15],
+        return [state[0], state[13], state[10], state[7],
+                state[4], state[1], state[14], state[11],
+                state[8], state[5], state[2], state[15],
                 state[12], state[9], state[6], state[3]]
 
     @staticmethod
@@ -130,7 +132,7 @@ class AES:
                 state[12], state[1], state[6], state[11]]
 
     def _mix_columns(self, state: bytearray):
-        # since this is really just matrix mult, we could split col and inverse to another function to not reuse code
+        # there is clearly lots of optimisation that can be done...
         state_matrix = self._bytes_to_columns(state)
 
         mix_column_matrix = [[2, 3, 1, 1],
@@ -140,7 +142,23 @@ class AES:
 
         columned_final = []
         for column in state_matrix:
-            columned_final.append(numpy.matmul(mix_column_matrix, column))
+            final_column = []
+            for row in mix_column_matrix:
+                equation = []
+                for i in range(4):
+                    if row[i] == 1:
+                        equation.append(column[i])
+                        continue
+
+                    val = ((column[i] << 1) ^ 0b00011011) & 0xff
+                    if row[i] == 3:
+                        val = val ^ column[i]
+                    equation.append(val)
+                final_value = 0
+                for item in equation:
+                    final_value ^= item
+                final_column.append(final_value)
+            columned_final.append(final_column)
 
         return self._columns_to_bytes(columned_final)
 
