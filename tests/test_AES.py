@@ -24,10 +24,8 @@ class TestAES(unittest.TestCase):
         self.assertNotEqual(result, bytes(b'\x00' * 16))
 
     def test_mix_columns(self):
-        return
-
-    def test_mix_rows(self):
-        return
+        state = bytearray(b'\xf1\xe2\xf3\xe4' * 4)
+        self.assertEqual(cipher._inv_mix_columns(cipher._mix_columns(state)), state)
 
     def test_sub_bytes(self):
         self.assertEqual(AES._sub_bytes(bytearray(b'\x01')), bytearray(b'\x7c'))

@@ -1,3 +1,5 @@
+import numpy
+
 class AES:
     '''
     Key length
@@ -7,6 +9,36 @@ class AES:
         assert len(key) == 16
         self.key = key
         self.subkeys = []
+
+    @staticmethod
+    def _bytes_to_columns(state: bytearray):
+        return [[state[0], state[1], state[2], state[3]],
+                [state[4], state[5], state[6], state[7]],
+                [state[8], state[9], state[10], state[11]],
+                [state[12], state[13], state[14], state[15]]]
+
+    @staticmethod
+    def _columns_to_bytes(state):
+        final_array = []
+        for i in range(4):
+            for j in range(4):
+                final_array.append(state[i][j] % 255)
+        return final_array
+
+    @staticmethod
+    def _bytes_to_rows(state: bytearray):
+        return [state[0], state[4], state[8], state[12],
+                state[1], state[5], state[9], state[13],
+                state[2], state[6], state[10], state[14],
+                state[3], state[7], state[11], state[15]]
+
+    @staticmethod
+    def _rows_to_bytes(state):
+        final_array = []
+        for i in range(4):
+            for j in range(4):
+                final_array.append(state[j][i] % 255)
+        return final_array
 
     @staticmethod
     def _xor(a, b):
@@ -27,7 +59,7 @@ class AES:
 
     @staticmethod
     def _sub_bytes(state: bytearray):
-        sub_bytes = (
+        sub_table = [
             0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
             0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0,
             0xB7, 0xFD, 0x93, 0x26, 0x36, 0x3F, 0xF7, 0xCC, 0x34, 0xA5, 0xE5, 0xF1, 0x71, 0xD8, 0x31, 0x15,
@@ -44,13 +76,13 @@ class AES:
             0x70, 0x3E, 0xB5, 0x66, 0x48, 0x03, 0xF6, 0x0E, 0x61, 0x35, 0x57, 0xB9, 0x86, 0xC1, 0x1D, 0x9E,
             0xE1, 0xF8, 0x98, 0x11, 0x69, 0xD9, 0x8E, 0x94, 0x9B, 0x1E, 0x87, 0xE9, 0xCE, 0x55, 0x28, 0xDF,
             0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16,
-        )
+        ]
 
-        return bytearray([sub_bytes[i] for i in state])
+        return bytearray([sub_table[i] for i in state])
 
     @staticmethod
     def _inv_sub_bytes(state: bytearray):
-        inv_sub_bytes = (
+        inv_sub_table = [
             0x52, 0x09, 0x6A, 0xD5, 0x30, 0x36, 0xA5, 0x38, 0xBF, 0x40, 0xA3, 0x9E, 0x81, 0xF3, 0xD7, 0xFB,
             0x7C, 0xE3, 0x39, 0x82, 0x9B, 0x2F, 0xFF, 0x87, 0x34, 0x8E, 0x43, 0x44, 0xC4, 0xDE, 0xE9, 0xCB,
             0x54, 0x7B, 0x94, 0x32, 0xA6, 0xC2, 0x23, 0x3D, 0xEE, 0x4C, 0x95, 0x0B, 0x42, 0xFA, 0xC3, 0x4E,
@@ -67,9 +99,9 @@ class AES:
             0x60, 0x51, 0x7F, 0xA9, 0x19, 0xB5, 0x4A, 0x0D, 0x2D, 0xE5, 0x7A, 0x9F, 0x93, 0xC9, 0x9C, 0xEF,
             0xA0, 0xE0, 0x3B, 0x4D, 0xAE, 0x2A, 0xF5, 0xB0, 0xC8, 0xEB, 0xBB, 0x3C, 0x83, 0x53, 0x99, 0x61,
             0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D,
-        )
+        ]
 
-        return bytearray([inv_sub_bytes[i] for i in state])
+        return bytearray([inv_sub_table[i] for i in state])
 
     def encrypt(self, plaintext_block: bytearray):
         '''
@@ -93,6 +125,34 @@ class AES:
     @staticmethod
     def _shift_rows(state: bytearray):
         return [state[0], state[1], state[2], state[3], state[5], state[6], state[7], state[4], state[10], state[11],
-                state[8], state[9],
-                state[15], state[12], state[13], state[14]]
+                state[8], state[9], state[15], state[12], state[13], state[14]]
+
+    def _mix_columns(self, state: bytearray):
+        # since this is really just matrix mult, we could split col and inverse to another function to not reuse code
+        state_matrix = self._bytes_to_columns(state)
+
+        mix_column_matrix = [[2, 3, 1, 1],
+                             [1, 2, 3, 1],
+                             [1, 1, 2, 3],
+                             [3, 1, 1, 2]]
+
+        columned_final = []
+        for column in state_matrix:
+            columned_final.append(numpy.matmul(mix_column_matrix, column))
+
+        return self._columns_to_bytes(columned_final)
+
+    def _inv_mix_columns(self, state: bytearray):
+        state_matrix = self._bytes_to_columns(state)
+
+        mix_column_matrix = [[0x0E, 0x0B, 0x0D, 0x09],
+                             [0x09, 0x0E, 0x0B, 0x0D],
+                             [0x0D, 0x09, 0x0E, 0x0B],
+                             [0x0B, 0x0D, 0x09, 0x0E]]
+
+        columned_final = []
+        for column in state_matrix:
+            columned_final.append(numpy.matmul(mix_column_matrix, column))
+
+        return self._columns_to_bytes(columned_final)
 
