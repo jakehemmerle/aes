@@ -25,11 +25,10 @@ class TestAES(unittest.TestCase):
 
     def test_mix_columns(self):
 
-        state = cipher._rows_to_bytes([[0x63, 0xef, 0x9f, 0xa0],
+        state = cipher._rows_to_bytes([[0x63, 0xeb, 0x9f, 0xa0],
                                        [0x2f, 0x93, 0x92, 0xc0],
                                        [0xaf, 0xc7, 0xab, 0x30],
                                        [0xa2, 0x20, 0xcb, 0x2b]])
-        a = cipher._mix_columns(state)
         self.assertEqual(cipher._inv_mix_columns(cipher._mix_columns(state)), state)
 
     def test_sub_bytes(self):
