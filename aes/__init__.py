@@ -27,7 +27,6 @@ class AES:
 
     @staticmethod
     def _sub_bytes(state: bytearray):
-        # this could be reduced to a math function or a BST for faster value finding
         sub_bytes = (
             0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
             0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0,
@@ -85,3 +84,15 @@ class AES:
     @staticmethod
     def _add_key(block: bytearray, subkey: bytes):
         return AES._xor(block, subkey)
+
+    @staticmethod
+    def _inv_shift_rows(state: bytearray):
+        return [state[0], state[1], state[2], state[3], state[7], state[4], state[5], state[6], state[10], state[11], state[8], state[9],
+                state[13], state[14], state[15], state[12]]
+
+    @staticmethod
+    def _shift_rows(state: bytearray):
+        return [state[0], state[1], state[2], state[3], state[5], state[6], state[7], state[4], state[10], state[11],
+                state[8], state[9],
+                state[15], state[12], state[13], state[14]]
+

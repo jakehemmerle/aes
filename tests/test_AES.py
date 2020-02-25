@@ -35,6 +35,10 @@ class TestAES(unittest.TestCase):
     def test_inv_sub_bytes(self):
         self.assertEqual(AES._inv_sub_bytes(bytearray(b'\x7c')), bytearray(b'\x01'))
 
+    def test_shift_rows(self):
+        state = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+        self.assertEqual(AES._inv_shift_rows(AES._shift_rows(state)), state)
+
 
 if __name__ == '__main__':
     unittest.main()
