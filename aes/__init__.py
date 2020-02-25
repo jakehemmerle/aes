@@ -119,17 +119,17 @@ class AES:
 
     @staticmethod
     def _inv_shift_rows(state: bytearray):
-        return [state[0], state[13], state[10], state[7],
-                state[4], state[1], state[14], state[11],
-                state[8], state[5], state[2], state[15],
-                state[12], state[9], state[6], state[3]]
+        return bytearray([state[0], state[13], state[10], state[7],
+                          state[4], state[1], state[14], state[11],
+                          state[8], state[5], state[2], state[15],
+                          state[12], state[9], state[6], state[3]])
 
     @staticmethod
     def _shift_rows(state: bytearray):
-        return [state[0], state[5], state[10], state[15],
-                state[4], state[9], state[14], state[3],
-                state[8], state[13], state[2], state[7],
-                state[12], state[1], state[6], state[11]]
+        return bytearray([state[0], state[5], state[10], state[15],
+                          state[4], state[9], state[14], state[3],
+                          state[8], state[13], state[2], state[7],
+                          state[12], state[1], state[6], state[11]])
 
     def _mix_columns(self, state: bytearray):
         # there is clearly lots of optimisation that can be done...
@@ -150,7 +150,9 @@ class AES:
                         equation.append(column[i])
                         continue
 
-                    val = ((column[i] << 1) ^ 0b00011011) & 0xff
+                    val = column[i] << 1
+                    if val > 127:
+                        val = (val ^ 0b00011011) & 0xff
                     if row[i] == 3:
                         val = val ^ column[i]
                     equation.append(val)

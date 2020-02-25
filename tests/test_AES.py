@@ -24,12 +24,17 @@ class TestAES(unittest.TestCase):
         self.assertNotEqual(result, bytes(b'\x00' * 16))
 
     def test_mix_columns(self):
-
+        # this is same state from lecture 5 pdf
         state = cipher._rows_to_bytes([[0x63, 0xeb, 0x9f, 0xa0],
                                        [0x2f, 0x93, 0x92, 0xc0],
                                        [0xaf, 0xc7, 0xab, 0x30],
                                        [0xa2, 0x20, 0xcb, 0x2b]])
-        self.assertEqual(cipher._inv_mix_columns(cipher._mix_columns(state)), state)
+
+        expected_state = cipher._rows_to_bytes([[0xba, 0x84, 0xe8, 0x1b],
+                                                [0x75, 0xa4, 0x8d, 0x40],
+                                                [0xf4, 0x8d, 0x06, 0x7d],
+                                                [0x7a, 0x32, 0x0e, 0x5d]])
+        self.assertEqual(cipher._mix_columns(state), expected_state)
 
     def test_sub_bytes(self):
         self.assertEqual(AES._sub_bytes(bytearray(b'\x01')), bytearray(b'\x7c'))
@@ -45,9 +50,9 @@ class TestAES(unittest.TestCase):
         state = bytearray(b'\x01\x02\x03\x04' * 4)
         self.assertEqual(cipher._columns_to_bytes(cipher._bytes_to_columns(state)), state)
 
-    def test_row_conversion(self):
-        state = bytearray(b'\x01\x02\x03\x04' * 4)
-        self.assertEqual(cipher._)
+    # def test_row_conversion(self):
+        # state = bytearray(b'\x01\x02\x03\x04' * 4)
+        # self.assertEqual(cipher._)
 
 
 
