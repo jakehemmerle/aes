@@ -22,8 +22,8 @@ class AES:
         final_array = []
         for i in range(4):
             for j in range(4):
-                final_array.append(state[i][j] % 255)
-        return final_array
+                final_array.append(state[i][j])
+        return bytearray(final_array)
 
     @staticmethod
     def _bytes_to_rows(state: bytearray):
@@ -38,7 +38,7 @@ class AES:
         for i in range(4):
             for j in range(4):
                 final_array.append(state[j][i] % 255)
-        return final_array
+        return bytearray(final_array)
 
     @staticmethod
     def _xor(a, b):
@@ -119,13 +119,15 @@ class AES:
 
     @staticmethod
     def _inv_shift_rows(state: bytearray):
-        return [state[0], state[1], state[2], state[3], state[7], state[4], state[5], state[6], state[10], state[11], state[8], state[9],
-                state[13], state[14], state[15], state[12]]
+        return [state[0], state[13], state[10], state[7], state[4], state[1], state[14], state[11], state[8], state[5], state[2], state[15],
+                state[12], state[9], state[6], state[3]]
 
     @staticmethod
     def _shift_rows(state: bytearray):
-        return [state[0], state[1], state[2], state[3], state[5], state[6], state[7], state[4], state[10], state[11],
-                state[8], state[9], state[15], state[12], state[13], state[14]]
+        return [state[0], state[5], state[10], state[15],
+                state[4], state[9], state[14], state[3],
+                state[8], state[13], state[2], state[7],
+                state[12], state[1], state[6], state[11]]
 
     def _mix_columns(self, state: bytearray):
         # since this is really just matrix mult, we could split col and inverse to another function to not reuse code
