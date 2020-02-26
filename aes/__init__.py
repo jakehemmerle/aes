@@ -124,7 +124,6 @@ class AES:
             state = self._shift_rows(state)
             state = self._mix_columns(state)
             state = self._add_key(state, key)
-        print("State after round {}: {}".format(len(self.subkeys) - 1, state.hex()))
         return state
 
 

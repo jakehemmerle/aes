@@ -1,9 +1,16 @@
-import os, json, binascii
+import os, sys
 import argon2
 from aes import AES
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
+
 
 class CryptoEngine:
+    """
+    Interface for AES engine. Allows for whole files to be encrypted, decrypted,
+    and uses a KDF. Does all the padding, etc for you
+    """
+
     def __init__(self, secret: str):
         self.salt = b'superSecretSaltt!'
         self.argon2_config = {  # default values (pretty sure)
@@ -16,7 +23,6 @@ class CryptoEngine:
 
         self.key = self._hash_secret(secret)
         self.cipher = AES(self.key)
-        self._set_subkeys()
 
     # destructor
     def __del__(self):
@@ -31,7 +37,7 @@ class CryptoEngine:
         :return:
         """
         plaintext = bytearray(plaintext, 'utf8')
-        return plaintext + b"\x00" * (16 - len(plaintext) % 16)
+        return plaintext + b"\x00" * ((16 - len(plaintext)) % 16)
 
     @staticmethod
     def _depad(plaintext: bytearray):
@@ -47,10 +53,10 @@ class CryptoEngine:
         :param plaintext:
         :return:
         '''
-        padded_plaintext = self._pad(plaintext)
-        ciphertext = []
+        padded_plaintext = self._pad(plaintext[:-1])  # this -1 is only here because \n makes us use another block
+        ciphertext = b''
         for block in self._split_to_blocks(padded_plaintext):
-            ciphertext.append(self.cipher.encrypt(block))
+            ciphertext += self.cipher.encrypt(block)
 
         return ciphertext
 
@@ -79,10 +85,20 @@ class CryptoEngine:
         """
         return [data[i:i + 16] for i in range(0, len(data), 16)]
 
-    def _set_subkeys(self):
-        with open('/Users/jakehemmerle/Documents/codebases/UC/Network-Security/aes_m12232386/data/subkeys.txt',
-                  'r') as file:
+    def set_subkeys(self, file_location: str):
+        with open(file_location, 'r') as file:
             key_string = file.read()
         subkeys = [bytes.fromhex(key) for key in key_string[:-1].split('\n')]  # -1 removes last '\n'
 
         self.cipher.subkeys = subkeys
+
+
+if __name__ == '__main__':
+    engine = CryptoEngine('defailt_password')  # password needed for initalition
+
+    engine.set_subkeys('data/subkeys.txt')
+    with open('data/plaintext.txt', 'r') as file:
+        plaintext = file.read()
+    ciphertext = engine.encrypt(plaintext)
+
+    print("State after round {}: {}".format(len(engine.cipher.subkeys) - 1, ciphertext.hex()))
