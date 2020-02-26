@@ -58,7 +58,7 @@ class AES:
 
     def _manually_set_subkeys(self, subkeys: list):
         '''
-        Manually sets subkeys
+        Manually sets subkeys in AES
         :param subkeys:
         :return: None
         '''
@@ -66,6 +66,11 @@ class AES:
 
     @staticmethod
     def _sub_bytes(state: bytearray):
+        """
+        returns a new state with byte substitution as defined in AES standard
+        :param state:
+        :return:
+        """
         sub_table = [
             0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
             0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0,
@@ -112,21 +117,18 @@ class AES:
 
     def encrypt(self, plaintext_block: bytearray):
         '''
-        Returns block encrypted with key
+        Returns encrypted block
         :param plaintext_block:
-        :return:
+        :return: bytearray, final state after 1 round
         '''
         state = plaintext_block
         self._add_key(state, self.subkeys[0])
-        for key in self.subkeys[1:]:
+        for key in self.subkeys[1:]:  # since there is only one key in this list, only one round
             state = self._sub_bytes(state)
             state = self._shift_rows(state)
             state = self._mix_columns(state)
             state = self._add_key(state, key)
         return state
-
-
-
 
     @staticmethod
     def _add_key(block: bytearray, subkey: bytes):
@@ -141,13 +143,23 @@ class AES:
 
     @staticmethod
     def _shift_rows(state: bytearray):
+        """
+        Shifts rows in the input state, returns new state
+        :param state:
+        :return: new state as bytearray
+        """
         return bytearray([state[0], state[5], state[10], state[15],
                           state[4], state[9], state[14], state[3],
                           state[8], state[13], state[2], state[7],
                           state[12], state[1], state[6], state[11]])
 
     def _mix_columns(self, state: bytearray):
-        # there is clearly lots of optimisation that can be done...
+        """
+        Mixes columns as defined in the AES standard
+        This can clearly get optimised
+        :param state:
+        :return: new state as bytearray
+        """
         state_matrix = self._bytes_to_columns(state)
 
         mix_column_matrix = [[2, 3, 1, 1],
@@ -181,4 +193,3 @@ class AES:
 
     def _inv_mix_columns(self, state: bytearray):
         return
-

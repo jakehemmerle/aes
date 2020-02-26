@@ -76,3 +76,6 @@ if __name__ == '__main__':
     ciphertext = engine.encrypt(plaintext)
 
     print("State after round {}: {}".format(len(engine.cipher.subkeys) - 1, ciphertext.hex()))
+
+    with open('data/results.txt', 'w') as file:
+        file.write(ciphertext.hex())
