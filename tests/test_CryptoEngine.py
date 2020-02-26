@@ -11,8 +11,7 @@ plaintexts = [
     'This is ano ther text string',
     'dfdfdfdfdfdfiiiiiiiiii'
 ]
-password = 'Password!'
-engine = CryptoEngine(password)
+engine = CryptoEngine()
 
 
 class TestCryptoEngine(unittest.TestCase):
@@ -24,11 +23,8 @@ class TestCryptoEngine(unittest.TestCase):
         for string in plaintexts:
             self.assertEqual(len(engine._pad(string)) % 16, 0)
 
-    def test_hash_is_len_128(self):
-        self.assertEqual(len(engine._hash_secret('secrett')), 16)
-
     def test_parses_subkeys_into_16_bytes(self):
-        engine._set_subkeys()
+        engine.set_subkeys('data/subkeys.txt')
         print(engine.cipher.subkeys)
         for key in engine.cipher.subkeys:
             self.assertEqual(len(key), 16)

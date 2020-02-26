@@ -51,13 +51,6 @@ class TestAES(unittest.TestCase):
         state = bytearray(b'\x01\x02\x03\x04' * 4)
         self.assertEqual(cipher._columns_to_bytes(cipher._bytes_to_columns(state)), state)
 
-    # def test_row_conversion(self):
-        # state = bytearray(b'\x01\x02\x03\x04' * 4)
-        # self.assertEqual(cipher._)
-
-
-
-
 
 if __name__ == '__main__':
     unittest.main()

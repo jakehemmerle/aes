@@ -3,8 +3,7 @@ class AES:
     Key length
     '''
 
-    def __init__(self, key: bytes):
-        assert len(key) == 16
+    def __init__(self, key: bytes = None):
         self.key = key
         self.subkeys = []
 
